@@ -17,12 +17,12 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage){
-        Label widthLabel = new Label("Pixel widht: ");
-        TextField widthParam = new TextField("20");
+        Label widthLabel = new Label("Output image width: ");
+        TextField widthParam = new TextField("400");
         HBox widthBox = new HBox(widthLabel,widthParam);
 
-        Label heightLabel = new Label("Pixel height");
-        TextField heightParam = new TextField("20");
+        Label heightLabel = new Label("Output image height");
+        TextField heightParam = new TextField("225");
         HBox heightBox = new HBox(heightLabel, heightParam);
 
         Label guiWidthLabel = new Label("gui widht: ");

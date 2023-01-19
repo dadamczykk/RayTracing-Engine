@@ -11,11 +11,11 @@ public class Vec3d {
         this.z = z;
     }
 
-    public Vec3d oppositeSelf(){
+    public Vec3d opposite(){
         return new Vec3d(-this.x, -this.y, -this.z);
     }
 
-    public void substractSelf(Vec3d other){
+    public void subtractSelf(Vec3d other){
         this.x -= other.x;
         this.y -= other.y;
         this.z -= other.z;
@@ -49,7 +49,7 @@ public class Vec3d {
         return new Vec3d(this.x + other.x, this.y + other.y, this.z + other.z);
     }
 
-    public Vec3d substract(Vec3d other){
+    public Vec3d subtract(Vec3d other){
         return new Vec3d(this.x - other.x, this.y - other.y, this.z - other.z);
     }
 
