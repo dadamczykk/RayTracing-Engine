@@ -1,5 +1,9 @@
 package agh.rayTracing.math;
 
+import agh.rayTracing.Main;
+
+import static java.lang.Math.*;
+
 public class Vec3d {
     public double x;
     public double y;
@@ -104,5 +108,43 @@ public class Vec3d {
                 Double.toString(z) + " " ;
     }
 
-    
+    public static Vec3d random(){
+        return new Vec3d(Main.randomDouble(), Main.randomDouble(), Main.randomDouble());
+    }
+
+    public static Vec3d random(double min, double max){
+        return new Vec3d(Main.randomDouble(min, max), Main.randomDouble(min, max), Main.randomDouble(min, max));
+    }
+
+    public static Vec3d randomInUnitSphere(){
+        while(true){
+            Vec3d v = random(-1, 1);
+            if (v.lengthSquared() < 1) return v;
+        }
+    }
+
+    public static Vec3d randomUnitVec(){
+        return randomInUnitSphere().unitVec();
+    }
+
+    public static Vec3d randomInHemi(Vec3d n){
+        Vec3d inUni = randomInUnitSphere();
+        return (inUni.dot(n) > 0) ? inUni : inUni.opposite();
+    }
+
+    public boolean nearZero(){
+        double s = 1e-9;
+        return abs(this.x) < s && abs(this.y) < s && abs(this.z) < s;
+    }
+
+    public static Vec3d reflect(Vec3d v, Vec3d n){
+        return v.subtract(n.multiply(2*n.dot(v)));
+    }
+    public static Vec3d refract(Vec3d uv, Vec3d n, double frac){
+        double cos = min(n.dot(uv.opposite()), 1);
+        Vec3d r1 = uv.add(n.multiply(cos)).multiply(frac);
+        Vec3d r2 = n.multiply(-sqrt(abs(1.0 - r1.lengthSquared())));
+        return r1.add(r2);
+
+    }
 }

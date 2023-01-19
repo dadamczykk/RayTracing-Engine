@@ -2,6 +2,8 @@ package agh.rayTracing;
 
 import agh.rayTracing.math.Vec3d;
 
+import static java.lang.Math.tan;
+
 public class Camera {
 
     Vec3d origin;
@@ -9,17 +11,23 @@ public class Camera {
     Vec3d horizontal;
     Vec3d vertical;
 
-    public Camera(int width, int height){
-        double aspectRatio = (double)width / (double)height;
-        double viewportHeight = 2.0;
-        double viewportWidth = aspectRatio * viewportHeight;
-        double focalLength = 1.0;
+    public Camera(int width, int height,Vec3d lookFrom, Vec3d lookAt, Vec3d hmm, double vFov){
 
-        this.origin = new Vec3d(0, 0,0 );
-        this.horizontal = new Vec3d(viewportWidth, 0, 0);
-        this.vertical = new Vec3d(0, viewportHeight, 0);
+        double theta  = Main.degToRad(vFov);
+        double h = tan(theta/2);
+        double aspectRatio = (double)width / (double)height;
+        double viewportHeight = 2.0 * h;
+        double viewportWidth = aspectRatio * viewportHeight;
+
+        Vec3d w = lookFrom.subtract(lookAt).unitVec();
+        Vec3d u = hmm.cross(w).unitVec();
+        Vec3d v = w.cross(u);
+
+        this.origin = lookFrom;
+        this.horizontal = u.multiply(viewportWidth);
+        this.vertical = v.multiply(viewportHeight);
         this.lowerLeftCorner = origin.subtract(horizontal.divide(2))
-                .subtract(vertical.divide(2)).subtract(new Vec3d(0, 0, focalLength));
+                .subtract(vertical.divide(2)).subtract(w);
     }
 
     public Ray getRay(double u, double v){

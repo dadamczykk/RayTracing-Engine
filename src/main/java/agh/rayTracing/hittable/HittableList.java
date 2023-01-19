@@ -18,13 +18,13 @@ public class HittableList extends AbstractHittable{
             if (object.hit(r, tMin, closest, tmp)){
                 wasHit = true;
                 closest = tmp.t;
-
             }
         }
         HR.normal = tmp.normal;
         HR.front = tmp.front;
         HR.t = tmp.t;
         HR.p = tmp.p;
+        HR.material = tmp.material;
         return wasHit;
     }
 
