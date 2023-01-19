@@ -17,11 +17,18 @@ public class HittableList extends AbstractHittable{
         for (AbstractHittable object : objects){
             if (object.hit(r, tMin, closest, tmp)){
                 wasHit = true;
-
                 closest = tmp.t;
-                HR = tmp;
+
             }
         }
+        HR.normal = tmp.normal;
+        HR.front = tmp.front;
+        HR.t = tmp.t;
+        HR.p = tmp.p;
         return wasHit;
+    }
+
+    public void add(AbstractHittable obj){
+        objects.add(obj);
     }
 }

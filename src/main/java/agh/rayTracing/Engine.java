@@ -1,6 +1,9 @@
 package agh.rayTracing;
 
 import agh.rayTracing.gui.Visualizer;
+import agh.rayTracing.hittable.HitRecord;
+import agh.rayTracing.hittable.HittableList;
+import agh.rayTracing.hittable.Sphere;
 import agh.rayTracing.math.Vec3d;
 import javafx.application.Platform;
 
@@ -8,6 +11,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import static java.lang.Math.sqrt;
@@ -18,46 +22,48 @@ public class Engine implements Runnable{
     int outWidth;
     int outHeight;
 
-
     int guiWidth;
     int guiHeight;
 
+    Camera cam;
 
-    public Engine(int guiWidth, int guiHeight, int outWidth, int outHeight){
+    final int samples;
+
+
+    public Engine(int guiWidth, int guiHeight, int outWidth, int outHeight, int density){
 
         this.vis = new Visualizer(guiWidth, guiHeight, outWidth, outHeight);
         this.guiWidth = guiWidth;
         this.guiHeight = guiHeight;
         this.outHeight = outHeight;
         this.outWidth = outWidth;
-    }
-
-    public double hitSphere(Vec3d center, double rad, Ray r){
-        Vec3d oc = r.origin.subtract(center);
-        double a = r.direction.lengthSquared();
-        double halfB = oc.dot(r.direction);
-        double c = oc.lengthSquared() - rad * rad;
-        double discriminant = halfB * halfB - a * c;
-        if (discriminant < 0){
-            return -1.0;
-        } else{
-            return (-halfB - sqrt(discriminant)) / a;
-        }
+        cam = new Camera(outWidth, outHeight);
+        samples = density;
 
     }
 
-    public Vec3d bgColor(Ray r){
-        double t = hitSphere(new Vec3d(0,0,-1), 0.5, r);
-        if (t > 0){
-//            System.out.println("sphereee");
-            Vec3d N = r.at(t).subtract(new Vec3d(0,0,-1.0)).unitVec();
-            return new Vec3d(N.x+1, N.y+1, N.z+1).multiply(0.5);
+
+    public Vec3d vecCol(Ray r, HittableList all){
+        HitRecord HR = new HitRecord();
+        if (all.hit(r, 0, Main.inf, HR)){
+            return HR.normal.add(new Vec3d(1, 1, 1)).multiply(0.5);
         }
 
         Vec3d unitDir = r.direction.unitVec();
-        t = 0.5 * (unitDir.y + 1.0);
+        double t = 0.5 * (unitDir.y + 1.0);
         return ((new Vec3d(1.0, 1.0, 1.0)).multiply(1.0-t))
                 .add(new Vec3d(0.5, 0.7, 1.0).multiply(t));
+    }
+
+    private double clamp(double val, double min, double max){
+        if (val < min) return min;
+        return Math.min(val, max);
+    }
+
+    private Vec3d getColor(Vec3d color, int samples){
+        return new Vec3d(clamp(color.x / samples, 0, 0.999),
+                clamp(color.y / samples, 0, 0.9999),
+                clamp(color.z / samples, 0, 0.9999));
     }
 
     public synchronized void run(){
@@ -76,13 +82,11 @@ public class Engine implements Runnable{
 
         System.out.println(viewportWidth);
 
-        Vec3d origin = new Vec3d(0.0,0.0,0.0);
-        Vec3d horizontal = new Vec3d(viewportWidth, 0.0,0.0);
-        Vec3d vertical = new Vec3d(0.0, viewportHeight, 0.0);
-        Vec3d lowerLeftCorner = new Vec3d(0.0,0.0,0.0);
-        lowerLeftCorner.subtractSelf(horizontal.divide(2.0));
-        lowerLeftCorner.subtractSelf(vertical.divide(2.0));
-        lowerLeftCorner.subtractSelf(new Vec3d(0.0, 0.0, focalLength));
+
+
+        HittableList world = new HittableList();
+        world.add(new Sphere(new Vec3d(0, 0, -1), 0.5));
+        world.add(new Sphere(new Vec3d(0, -100.5, -1), 100));
 
         for (int y = outHeight -1; y >= 0 ; y--){
 //            try {
@@ -92,20 +96,24 @@ public class Engine implements Runnable{
 //                }
             int finalY = y;
             for (int x = 0; x < outWidth; x++){
-
-                double u = (double) x / (outWidth-1);
-                double v = (double) y / (outHeight-1);
-
-                Ray r = new Ray(origin, ((lowerLeftCorner.add(horizontal.multiply(u)))
-                        .add(vertical.multiply(v))).subtract(origin));
-                Vec3d col = bgColor(r);
-
-
                 int finalX = x;
-                str.append(col.getColor());;
 
+                Vec3d col = new Vec3d(0,0,0);
+                for (int k = 0; k < samples; k++){
+                    double u = (x+Main.randomDouble()) / (outWidth-1);
+                    double v = (y+Main.randomDouble()) / (outHeight-1);
+                    Ray r = cam.getRay(u, v);
+                    col.addSelf(vecCol(r, world));
+                }
+
+                col = this.getColor(col, samples);
+
+                str.append(col.getColor());;
+//                System.out.println(col);
+
+                Vec3d finalCol = col;
                 Platform.runLater(() -> {
-                    vis.writePixel(finalX, finalY, col);
+                    vis.writePixel(finalX, finalY, finalCol);
 //                    vis.paintImg(finalY);
                 });
 

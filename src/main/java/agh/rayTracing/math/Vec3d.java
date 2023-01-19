@@ -103,4 +103,6 @@ public class Vec3d {
                 Double.toString(y) + ", " +
                 Double.toString(z) + " " ;
     }
+
+    
 }

@@ -5,12 +5,12 @@ import agh.rayTracing.math.Vec3d;
 
 public class HitRecord {
     Vec3d p;
-    Vec3d normal;
+    public Vec3d normal;
     double t;
     boolean front;
 
     void setFaceNormal(Ray r, Vec3d outward){
-        front = r.direction.dot(outward) < 0;
+        front = (r.direction.dot(outward) < 0);
         normal = front ? outward : outward.opposite();
     }
 }

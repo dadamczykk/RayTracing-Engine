@@ -71,7 +71,8 @@ public class App extends Application {
                 Engine eng = new Engine(Integer.parseInt(guiWidthParam.getText()),
                         Integer.parseInt(guiHeightParam.getText()),
                         Integer.parseInt(widthParam.getText()),
-                        Integer.parseInt(heightParam.getText()));
+                        Integer.parseInt(heightParam.getText()),
+                        Integer.parseInt(densityParam.getText()));
                 Thread th = new Thread(eng);
                 th.start();
 
