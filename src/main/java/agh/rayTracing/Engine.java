@@ -41,7 +41,7 @@ public class Engine implements Runnable{
         this.guiHeight = guiHeight;
         this.outHeight = outHeight;
         this.outWidth = outWidth;
-        cam = new Camera(outWidth, outHeight, new Vec3d(-2,2,1),
+        cam = new Camera(outWidth, outHeight, new Vec3d(-5,5,5), // new Vec3d(-2,2,1),
                 new Vec3d(0, 1, -1), new Vec3d(0,1,0), 90);
         samples = density;
         this.depth = depth;

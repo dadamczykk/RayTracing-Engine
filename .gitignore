@@ -9,6 +9,7 @@ build
 *.csv
 *.ppm
 *.txt
+*.obj
 
 ### Java ###
 # Compiled class file

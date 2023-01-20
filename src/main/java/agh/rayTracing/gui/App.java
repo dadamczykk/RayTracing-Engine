@@ -17,8 +17,12 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 
@@ -182,18 +186,28 @@ public class App extends Application {
             }
         });
 
-        readScene.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-
-            }
-        });
 
         readScene.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 try{
                     readSceneFromFile(hittables, addSceneField.getText());
+                } catch (Exception e){
+                    info.setText(e.getMessage());
+                }
+            }
+        });
+
+        addObj.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try{
+                    Vec3d push = new Vec3d(Double.parseDouble(vecx.getText()),
+                            Double.parseDouble(vecy.getText()),
+                            Double.parseDouble(vecz.getText()));
+                    AbstractMaterial material = getMaterial(colR.getText(), colG.getText(), colB.getText(),
+                            materialsCombo.getValue(), dif.getText(), ref.getText());
+                    readObjFile(hittables, addSceneField.getText(), material, push);
                 } catch (Exception e){
                     info.setText(e.getMessage());
                 }
@@ -232,6 +246,8 @@ public class App extends Application {
         });
 
     }
+
+
 
     private AbstractMaterial getMaterial(String R, String G, String B, MaterialType mt, String diff, String  refr){
 
@@ -274,6 +290,39 @@ public class App extends Application {
         return new Light(new Vec3d(1,1,1));
     }
 
+
+    private void readObjFile(HittableList hittables, String filename, AbstractMaterial material, Vec3d push)
+            throws FileNotFoundException {
+        if (!filename.matches(".*\\.obj$")){
+            filename += ".obj";
+        }
+        File f = new File(filename);
+        try (Scanner scan = new Scanner(f)){
+            ArrayList<Vec3d> vertices = new ArrayList<>();
+            vertices.add(new Vec3d(0,0,0));
+            while (scan.hasNextLine()){
+
+                String toParse = scan.nextLine();
+                String[] parts = toParse.split(" ");
+                List<String> list = new ArrayList<String>(Arrays.asList(parts));
+                list.removeAll(Arrays.asList("", null));
+                System.out.println(list);
+                if (list.size() < 1){
+                    continue;
+                }
+                if (list.get(0).equals("v")){
+                    vertices.add(new Vec3d(Double.parseDouble(list.get(1)),
+                            Double.parseDouble(list.get(2)),
+                            Double.parseDouble(list.get(3))).add(push));
+                } else if (parts[0].equals("f")){
+                    System.out.println("added");
+                    hittables.add(new Triangle(vertices.get(Integer.parseInt(list.get(1))),
+                            vertices.get(Integer.parseInt(list.get(2))),
+                            vertices.get(Integer.parseInt(list.get(3))), material));
+                }
+            }
+        }
+    }
 
     private void readSceneFromFile(HittableList objects, String filename) throws IOException{
         if (!filename.matches(".*\\.txt$")){
