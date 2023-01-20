@@ -9,7 +9,7 @@ import static java.lang.Math.*;
 
 public class Glass extends  AbstractMaterial{
 
-    double refractionInd;
+    public double refractionInd;
 
 
     public Glass(double ri){

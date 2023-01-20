@@ -8,11 +8,10 @@ public abstract class AbstractHittable implements IHittable {
 
     // lightsource on of
 
-    Vec3d color;
 
     // light rozpraszanie
 
-    AbstractMaterial material;
+    public AbstractMaterial material;
 
     @Override
     public abstract boolean hit(Ray r, double tMin, double tMax, HitRecord HR);

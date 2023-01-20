@@ -7,8 +7,8 @@ import agh.rayTracing.math.Vec3d;
 import static java.lang.Math.abs;
 
 public class Plane extends AbstractHittable{
-    Vec3d point;
-    Vec3d normal;
+    public Vec3d point;
+    public Vec3d normal;
 
     public Plane(Vec3d point, Vec3d normal, AbstractMaterial material){
         this.point = point;

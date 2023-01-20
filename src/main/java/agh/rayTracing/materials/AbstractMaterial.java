@@ -7,7 +7,7 @@ import agh.rayTracing.math.Vec3d;
 public abstract class AbstractMaterial implements  IMaterial{
 
     public Vec3d col = new Vec3d(0,0,0);
-    double scatter;
+    public double scatter;
 
     double scatterProbability = 1;
 

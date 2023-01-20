@@ -8,6 +8,7 @@ build
 *.iml
 *.csv
 *.ppm
+*.txt
 
 ### Java ###
 # Compiled class file

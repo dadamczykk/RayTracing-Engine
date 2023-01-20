@@ -29,8 +29,12 @@ public class Engine implements Runnable{
     final int samples;
     final int depth;
 
+    HittableList hittables;
 
-    public Engine(int guiWidth, int guiHeight, int outWidth, int outHeight, int density, int depth){
+    Vec3d bgColor;
+
+    public Engine(int guiWidth, int guiHeight, int outWidth,
+                  int outHeight, int density, int depth, HittableList hittables, Vec3d bgColor){
 
         this.vis = new Visualizer(guiWidth, guiHeight, outWidth, outHeight);
         this.guiWidth = guiWidth;
@@ -41,7 +45,8 @@ public class Engine implements Runnable{
                 new Vec3d(0, 1, -1), new Vec3d(0,1,0), 90);
         samples = density;
         this.depth = depth;
-
+        this.hittables = hittables;
+        this.bgColor = bgColor;
     }
 
 
@@ -53,7 +58,7 @@ public class Engine implements Runnable{
         }
 
         if (!all.hit(r, 0.001, Main.inf, HR)) {
-            return new Vec3d(0.5, 0.7, 1.0);
+            return bgColor;
         }
         Ray scatter = new Ray(new Vec3d(0,0,0), new Vec3d(0,0,0));
 
@@ -100,24 +105,18 @@ public class Engine implements Runnable{
 
 
 
-        HittableList world = new HittableList();
-        world.add(new Sphere(new Vec3d(0, -1, -1), 0.5, mCent));
-//        world.add(new Plane(new Vec3d(0,-5,0), new Vec3d(0,-1,0), bottom));
-        world.add(new Triangle(new Vec3d(-1,-1,-1),
-                new Vec3d(-2,-2,-1),new Vec3d(0,0,0),
-
-                mGround));
-//        world.add(new Plane(new Vec3d(-1,0,0), new Vec3d(-1,1,0), mRight));
-//        world.add(new Sphere(new Vec3d(0, -100.5, -1), 100, mGround));
-        world.add(new Sphere(new Vec3d(1, 0, -1), 0.5, mRight));
-        world.add(new Sphere(new Vec3d(-1, 0, -1), 0.5, mLeft));
+//
+//        hittables.add(new Sphere(new Vec3d(0, -1, -1), 0.5, mCent));
+//        hittables.add(new Triangle(new Vec3d(-1,-1,-1),
+//                new Vec3d(-2,-2,-1),new Vec3d(0,0,0),
+//
+//                mGround));
+//
+//        hittables.add(new Sphere(new Vec3d(1, 0, -1), 0.5, mRight));
+//        hittables.add(new Sphere(new Vec3d(-1, 0, -1), 0.5, mLeft));
 
         for (int y = outHeight -1; y >= 0 ; y--){
-//            try {
-//                    wait(100);
-//                } catch (InterruptedException e) {
-//                    throw new RuntimeException(e);
-//                }
+
             int finalY = y;
             for (int x = 0; x < outWidth; x++){
                 int finalX = x;
@@ -127,7 +126,7 @@ public class Engine implements Runnable{
                     double u = (x+Main.randomDouble()) / (outWidth-1);
                     double v = (y+Main.randomDouble()) / (outHeight-1);
                     Ray r = cam.getRay(u, v);
-                    col.addSelf(vecCol(r, world, depth));
+                    col.addSelf(vecCol(r, hittables, depth));
                 }
 
                 col = this.getColor(col, samples);

@@ -8,8 +8,8 @@ import javafx.scene.paint.Material;
 import static java.lang.Math.sqrt;
 
 public class Sphere extends AbstractHittable{
-    Vec3d center;
-    double radious;
+    public Vec3d center;
+    public double radious;
 
 
 

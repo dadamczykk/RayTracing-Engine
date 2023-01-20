@@ -8,9 +8,9 @@ import static java.lang.Math.abs;
 
 
 public class Triangle extends AbstractHittable{
-    Vec3d a;
-    Vec3d b;
-    Vec3d c;
+    public Vec3d a;
+    public Vec3d b;
+    public Vec3d c;
 
 
     public Triangle (Vec3d a, Vec3d b, Vec3d c, AbstractMaterial material){
