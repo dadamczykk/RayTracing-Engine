@@ -1,5 +1,7 @@
-package agh.rayTracing;
+package agh.rayTracing.render;
 
+import agh.rayTracing.Main;
+import agh.rayTracing.gui.App;
 import agh.rayTracing.gui.Visualizer;
 import agh.rayTracing.hittable.*;
 import agh.rayTracing.materials.*;
@@ -10,7 +12,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 import static java.lang.Math.sqrt;
@@ -33,20 +34,23 @@ public class Engine implements Runnable{
 
     Vec3d bgColor;
 
-    public Engine(int guiWidth, int guiHeight, int outWidth,
-                  int outHeight, int density, int depth, HittableList hittables, Vec3d bgColor){
+    ISky sky;
 
-        this.vis = new Visualizer(guiWidth, guiHeight, outWidth, outHeight);
+    public Engine(int guiWidth, int guiHeight, int outWidth,
+                  int outHeight, int density, int depth, HittableList hittables, ISky sky, App init){
+
+        this.vis = new Visualizer(guiWidth, guiHeight, outWidth, outHeight, init);
         this.guiWidth = guiWidth;
         this.guiHeight = guiHeight;
         this.outHeight = outHeight;
         this.outWidth = outWidth;
         cam = new Camera(outWidth, outHeight, new Vec3d(-5,5,5), // new Vec3d(-2,2,1),
-                new Vec3d(0, 1, -1), new Vec3d(0,1,0), 90);
+                new Vec3d(0, 1, -1), new Vec3d(0,1,0), 150);
         samples = density;
         this.depth = depth;
         this.hittables = hittables;
-        this.bgColor = bgColor;
+        this.sky = sky;
+
     }
 
 
@@ -58,7 +62,7 @@ public class Engine implements Runnable{
         }
 
         if (!all.hit(r, 0.001, Main.inf, HR)) {
-            return bgColor;
+            return sky.getColor(r);
         }
         Ray scatter = new Ray(new Vec3d(0,0,0), new Vec3d(0,0,0));
 
@@ -72,12 +76,6 @@ public class Engine implements Runnable{
         return emitted.add(col.multiply(vecCol(scatter, all, depth-1)));
         }
 
-//        Vec3d unitDir = r.direction.unitVec();
-//        double t = 0.5 * (unitDir.y + 1.0);
-//        return (new Vec3d(0,0,0));
-////        return ((new Vec3d(1.0, 1.0, 1.0)).multiply(1.0-t))
-////                .add(new Vec3d(0.5, 0.7, 1.0).multiply(t));
-//    }
 
     private double clamp(double val, double min, double max){
         if (val < min) return min;
@@ -96,29 +94,14 @@ public class Engine implements Runnable{
         str.append("P3\n");
         str.append(outWidth).append(" ").append(outHeight).append("\n").append(255).append("\n");
 
-        AbstractMaterial mGround = new Metal(new Vec3d(0.8, 0.8, 0.0), 1);
-        AbstractMaterial mCent = new Lambertian(new Vec3d(0.1, 0.2, 0.5));
-        AbstractMaterial mLeft = new Glass(1.5);
-        AbstractMaterial mRight = new Metal(new Vec3d(0.8, 0.6, 0.2), 0);
-        AbstractMaterial light = new Light(new Vec3d(1,1,1));
-        AbstractMaterial bottom = new Metal(new Vec3d(1,0,1), 0.5);
-
-
-
-//
-//        hittables.add(new Sphere(new Vec3d(0, -1, -1), 0.5, mCent));
-//        hittables.add(new Triangle(new Vec3d(-1,-1,-1),
-//                new Vec3d(-2,-2,-1),new Vec3d(0,0,0),
-//
-//                mGround));
-//
-//        hittables.add(new Sphere(new Vec3d(1, 0, -1), 0.5, mRight));
-//        hittables.add(new Sphere(new Vec3d(-1, 0, -1), 0.5, mLeft));
 
         for (int y = outHeight -1; y >= 0 ; y--){
 
             int finalY = y;
             for (int x = 0; x < outWidth; x++){
+                if (Thread.interrupted()){
+                    return;
+                }
                 int finalX = x;
 
                 Vec3d col = new Vec3d(0,0,0);
@@ -132,20 +115,15 @@ public class Engine implements Runnable{
                 col = this.getColor(col, samples);
 
                 str.append(col.getColor());;
-//                System.out.println(col);
 
                 Vec3d finalCol = col;
                 Platform.runLater(() -> {
                     vis.writePixel(finalX, finalY, finalCol);
-//                    vis.paintImg(finalY);
                 });
 
             }
 
         }
-//        Platform.runLater(() -> {
-//            vis.paintImg(0);
-//        });
         System.out.println("here");
         String filename = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss'.ppm'").format(new Date());
         File out = new File(filename);

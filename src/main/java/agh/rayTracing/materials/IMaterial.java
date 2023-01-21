@@ -1,6 +1,6 @@
 package agh.rayTracing.materials;
 
-import agh.rayTracing.Ray;
+import agh.rayTracing.render.Ray;
 import agh.rayTracing.hittable.HitRecord;
 import agh.rayTracing.math.Vec3d;
 

@@ -33,7 +33,7 @@ public class Visualizer {
     GridPane mainGrid;
 
 
-    public Visualizer(int guiWidth, int guiHeight, int outWidth, int outHeight){
+    public Visualizer(int guiWidth, int guiHeight, int outWidth, int outHeight, App init){
 
         this.rowsNo = outHeight;
         this.colsNo = outWidth;
@@ -61,6 +61,9 @@ public class Visualizer {
         stage = new Stage();
         stage.setScene(scene);
         stage.show();
+        stage.setOnCloseRequest(event -> {
+            init.rendering.interrupt();
+        });
     }
 
     public void updatePrecentage(int value){

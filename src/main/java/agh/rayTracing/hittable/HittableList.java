@@ -1,6 +1,6 @@
 package agh.rayTracing.hittable;
 
-import agh.rayTracing.Ray;
+import agh.rayTracing.render.Ray;
 
 import java.util.ArrayList;
 

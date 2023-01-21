@@ -1,8 +1,5 @@
 package agh.rayTracing.materials;
 
-import agh.rayTracing.Main;
-import agh.rayTracing.Ray;
-import agh.rayTracing.hittable.HitRecord;
 import agh.rayTracing.math.Vec3d;
 
 public class Lambertian extends Metal{

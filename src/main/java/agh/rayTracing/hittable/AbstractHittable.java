@@ -1,8 +1,7 @@
 package agh.rayTracing.hittable;
 
-import agh.rayTracing.Ray;
+import agh.rayTracing.render.Ray;
 import agh.rayTracing.materials.AbstractMaterial;
-import agh.rayTracing.math.Vec3d;
 
 public abstract class AbstractHittable implements IHittable {
 

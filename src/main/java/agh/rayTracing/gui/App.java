@@ -1,9 +1,12 @@
 package agh.rayTracing.gui;
 
-import agh.rayTracing.Engine;
+import agh.rayTracing.render.BasicSky;
+import agh.rayTracing.render.Engine;
 import agh.rayTracing.hittable.*;
 import agh.rayTracing.materials.*;
 import agh.rayTracing.math.Vec3d;
+import agh.rayTracing.render.ISky;
+import agh.rayTracing.render.ImageSky;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,6 +19,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -28,7 +33,8 @@ import java.util.Scanner;
 
 public class App extends Application {
 
-
+    ISky sky = new BasicSky(new Vec3d(0.7,0.3,0.9));
+    Thread rendering;
 
     @Override
     public void start(Stage primaryStage){
@@ -87,7 +93,8 @@ public class App extends Application {
         Button addSphere = new Button("Add Sphere");
         Button addPlane = new Button("Add plane");
         Button setBGcol = new Button("Set background color");
-        HBox addHittableBox = new HBox(addPlane, addSphere, addObj, setBGcol);
+        Button setBGImg = new Button("Set background image");
+        HBox addHittableBox = new HBox(addPlane, addSphere, addObj, setBGcol, setBGImg);
 
         Label difref = new Label("Below write diffusion / refraction parameter");
         TextField dif = new TextField("Diffusion, values between [0,1]");
@@ -115,7 +122,9 @@ public class App extends Application {
 
 
         HittableList hittables = new HittableList();
-        Vec3d bgCol = new Vec3d(0.7,0.3,0.9);
+
+        App app = this;
+
 
 
         addPlane.setOnAction(new EventHandler<ActionEvent>() {
@@ -163,27 +172,36 @@ public class App extends Application {
                     throw new RuntimeException("Wrong color values, sould be from interval [0,255]");
                 }
                 col1.divideSelf(255.999);
-                bgCol.x = col1.x;
-                bgCol.y = col1.y;
-                bgCol.z = col1.z;
+                setISkyCol(col1);
+
             } catch (Exception e) {
 
                 info.setText("Wrong color values");
             }
         });
 
-        addScene.setOnAction(new EventHandler<ActionEvent>() {
+        setBGImg.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                try {
-                    String filename = addSceneField.getText();
-
-                    saveSceneToFile(hittables, filename);
-                }catch (Exception e){
+                try{
+                    File file = new File(addSceneField.getText());
+                    BufferedImage img = ImageIO.read(file);
+                    setISkyImg(img);
+                } catch (IOException e) {
                     info.setText(e.getMessage());
                 }
-
             }
+        });
+
+        addScene.setOnAction(event -> {
+            try {
+                String filename = addSceneField.getText();
+
+                saveSceneToFile(hittables, filename);
+            }catch (Exception e){
+                info.setText(e.getMessage());
+            }
+
         });
 
 
@@ -234,9 +252,10 @@ public class App extends Application {
                             Integer.parseInt(widthParam.getText()),
                             Integer.parseInt(heightParam.getText()),
                             Integer.parseInt(densityParam.getText()),
-                            Integer.parseInt(depthParam.getText()), hittables, bgCol);
+                            Integer.parseInt(depthParam.getText()), hittables, sky, app);
                     Thread th = new Thread(eng);
                     th.start();
+                    setThread(th);
                 } catch (Exception e){
                     info.setText("Wrong value(s) of width/height/depth/density");
                 }
@@ -246,6 +265,23 @@ public class App extends Application {
         });
 
     }
+
+    private void setISkyCol(Vec3d col){
+        this.sky = new BasicSky(col);
+    }
+
+    private void setISkyImg(BufferedImage img) throws IOException {
+        this.sky = new ImageSky(img);
+    }
+
+    private void setThread(Thread th){
+        rendering = th;
+    }
+
+    void interruptThread(){
+        rendering.interrupt();
+    }
+
 
 
 
@@ -335,15 +371,12 @@ public class App extends Application {
                 String[] parts = toParse.split(",");
                 int idx = 0;
                 AbstractMaterial material;
-                if (parts[0].equals("sphere")){
-                    idx = 5;
-                } else if (parts[0].equals("plane")){
-                    idx = 7;
-                }else if (parts[0].equals("triangle")){
-                    idx = 10;
-                } else {
-                    throw new RuntimeException("Corrupted file");
-                }
+                idx = switch (parts[0]) {
+                    case "sphere" -> 5;
+                    case "plane" -> 7;
+                    case "triangle" -> 10;
+                    default -> throw new RuntimeException("Corrupted file");
+                };
                 material = switch (parts[idx]) {
                     case "light" -> new Light(new Vec3d(1, 1, 1));
                     case "glass" -> new Glass(Double.parseDouble(parts[idx + 1]));
@@ -396,19 +429,16 @@ public class App extends Application {
         FileWriter myWriter = new FileWriter(filename);
 
         for (AbstractHittable obj : objects.objects){
-            if (obj instanceof Sphere){
-                Sphere s = (Sphere)obj;
+            if (obj instanceof Sphere s){
                 myWriter.write("sphere,");
                 myWriter.write(s.center.x + "," + s.center.y + "," + s.center.z + "," + s.radious + ",");
             }
-            if (obj instanceof Plane){
-                Plane p = (Plane)obj;
+            if (obj instanceof Plane p){
                 myWriter.write("plane,");
                 myWriter.write(p.point.x + "," + p.point.y + "," + p.point.z + "," +
                         p.normal.x + "," + p.normal.y + "," + p.normal.z + ",");
             }
-            if (obj instanceof Triangle){
-                Triangle p = (Triangle)obj;
+            if (obj instanceof Triangle p){
                 myWriter.write("triangle,");
                 myWriter.write(p.a.x + "," + p.a.y + "," + p.a.z + "," +
                         p.b.x + "," + p.b.y + "," + p.b.z + "," +
@@ -420,8 +450,7 @@ public class App extends Application {
             if (obj.material instanceof Glass){
                 myWriter.write("glass," + ((Glass) obj.material).refractionInd);
             }
-            if (obj.material instanceof Metal){
-                Metal m = (Metal) obj.material;
+            if (obj.material instanceof Metal m){
                 myWriter.write("metal,");
                 myWriter.write(m.col.x + "," + m.col.y + "," + m.col.z + "," +m.scatter);
             }

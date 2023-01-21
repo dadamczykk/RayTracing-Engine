@@ -10,6 +10,8 @@ build
 *.ppm
 *.txt
 *.obj
+*.jpg
+*.png
 
 ### Java ###
 # Compiled class file
