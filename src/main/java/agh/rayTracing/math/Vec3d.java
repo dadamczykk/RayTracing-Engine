@@ -21,8 +21,9 @@ public class Vec3d {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        double eps = 0.000001;
         Vec3d vec3d = (Vec3d) o;
-        return Double.compare(vec3d.x, x) == 0 && Double.compare(vec3d.y, y) == 0 && Double.compare(vec3d.z, z) == 0;
+        return abs(vec3d.x - x) < eps && abs(vec3d.y - y) < eps && abs(vec3d.z - z) < eps;
     }
 
     @Override
@@ -138,19 +139,19 @@ public class Vec3d {
         }
     }
 
-    public static Vec3d randomUnitVec(){
-        return randomInUnitSphere().unitVec();
-    }
-
-    public static Vec3d randomInHemi(Vec3d n){
-        Vec3d inUni = randomInUnitSphere();
-        return (inUni.dot(n) > 0) ? inUni : inUni.opposite();
-    }
-
-    public boolean nearZero(){
-        double s = 1e-9;
-        return abs(this.x) < s && abs(this.y) < s && abs(this.z) < s;
-    }
+//    public static Vec3d randomUnitVec(){
+//        return randomInUnitSphere().unitVec();
+//    }
+//
+//    public static Vec3d randomInHemi(Vec3d n){
+//        Vec3d inUni = randomInUnitSphere();
+//        return (inUni.dot(n) > 0) ? inUni : inUni.opposite();
+//    }
+//
+//    public boolean nearZero(){
+//        double s = 1e-9;
+//        return abs(this.x) < s && abs(this.y) < s && abs(this.z) < s;
+//    }
 
     public static Vec3d reflect(Vec3d v, Vec3d n){
         return v.subtract(n.multiply(2*n.dot(v)));
