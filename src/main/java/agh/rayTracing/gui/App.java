@@ -1,20 +1,21 @@
 package agh.rayTracing.gui;
 
-import agh.rayTracing.render.BasicSky;
-import agh.rayTracing.render.Engine;
 import agh.rayTracing.hittable.*;
 import agh.rayTracing.materials.*;
 import agh.rayTracing.math.Vec3d;
+import agh.rayTracing.render.BasicSky;
+import agh.rayTracing.render.Engine;
 import agh.rayTracing.render.ISky;
 import agh.rayTracing.render.ImageSky;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -46,7 +47,7 @@ public class App extends Application {
         TextField heightParam = new TextField("225");
         HBox heightBox = new HBox(heightLabel, heightParam);
 
-        Label guiWidthLabel = new Label("gui widht: ");
+        Label guiWidthLabel = new Label("gui width: ");
         TextField guiWidthParam = new TextField("1280");
         HBox guiWidthBox = new HBox(guiWidthLabel,guiWidthParam);
 
@@ -68,7 +69,19 @@ public class App extends Application {
 
         HBox addSceneBox = new HBox(addScene, readScene, addSceneField);
 
-        Label point = new Label("belowe write x y z of sphere centre or plane point");
+        Label cameraStart = new Label("below write x, y, z coordinates of point where camera stands");
+        TextField camStartx = new TextField("-2");
+        TextField camStarty = new TextField("2");
+        TextField camStartz = new TextField("1");
+        HBox camStartBox = new HBox(camStartx, camStarty, camStartz);
+
+        Label cameraEnd = new Label("below write x, y, z coordinates of point where camera is focused");
+        TextField camEndx = new TextField("0");
+        TextField camEndy = new TextField("1");
+        TextField camEndz = new TextField("-1");
+        HBox camEndBox = new HBox(camEndx, camEndy, camEndz);
+
+        Label point = new Label("below write x y z of sphere centre or plane point");
         TextField pointx = new TextField("X value");
         TextField pointy = new TextField("Y value");
         TextField pointz = new TextField("Z value");
@@ -110,7 +123,8 @@ public class App extends Application {
 
         Label info = new Label("");
 
-        VBox aggregate = new VBox(widthBox, heightBox, guiWidthBox, guiHeightBox, depthBox, densityBox,materialsCombo,
+        VBox aggregate = new VBox(widthBox, heightBox, guiWidthBox, guiHeightBox, depthBox, densityBox,
+                cameraStart, camStartBox, cameraEnd, camEndBox, materialsCombo,
                 col, colBox, point, pointBox, difref, difrefbox,
                 cirrad, cirradfi, vec, vecBox,
                 addSceneBox, addHittableBox, startVisualization, info);
@@ -127,25 +141,22 @@ public class App extends Application {
 
 
 
-        addPlane.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try{
-                    AbstractMaterial material = getMaterial(colR.getText(), colG.getText(), colB.getText(),
-                            materialsCombo.getValue(), dif.getText(), ref.getText());
+        addPlane.setOnAction(event -> {
+            try{
+                AbstractMaterial material = getMaterial(colR.getText(), colG.getText(), colB.getText(),
+                        materialsCombo.getValue(), dif.getText(), ref.getText());
 
-                    Vec3d pos = new Vec3d(Double.parseDouble(pointx.getText()), Double.parseDouble(pointy.getText()),
-                            Double.parseDouble(pointz.getText()));
+                Vec3d pos = new Vec3d(Double.parseDouble(pointx.getText()), Double.parseDouble(pointy.getText()),
+                        Double.parseDouble(pointz.getText()));
 
-                    Vec3d normal = new Vec3d(Double.parseDouble(vecx.getText()), Double.parseDouble(vecy.getText()),
-                            Double.parseDouble(vecz.getText()));
+                Vec3d normal = new Vec3d(Double.parseDouble(vecx.getText()), Double.parseDouble(vecy.getText()),
+                        Double.parseDouble(vecz.getText()));
 
-                    hittables.add(new Plane(pos, normal, material));
-                } catch (Exception e){
-                    info.setText(e.getMessage());
-                }
-
+                hittables.add(new Plane(pos, normal, material));
+            } catch (Exception e){
+                info.setText(e.getMessage());
             }
+
         });
 
 
@@ -180,16 +191,13 @@ public class App extends Application {
             }
         });
 
-        setBGImg.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try{
-                    File file = new File(addSceneField.getText());
-                    BufferedImage img = ImageIO.read(file);
-                    setISkyImg(img);
-                } catch (IOException e) {
-                    info.setText(e.getMessage());
-                }
+        setBGImg.setOnAction(event -> {
+            try{
+                File file = new File(addSceneField.getText());
+                BufferedImage img = ImageIO.read(file);
+                setISkyImg(img);
+            } catch (IOException e) {
+                info.setText(e.getMessage());
             }
         });
 
@@ -205,63 +213,60 @@ public class App extends Application {
         });
 
 
-        readScene.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try{
-                    readSceneFromFile(hittables, addSceneField.getText());
-                } catch (Exception e){
-                    info.setText(e.getMessage());
-                }
+        readScene.setOnAction(event -> {
+            try{
+                readSceneFromFile(hittables, addSceneField.getText());
+            } catch (Exception e){
+                info.setText(e.getMessage());
             }
         });
 
-        addObj.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try{
-                    Vec3d push = new Vec3d(Double.parseDouble(vecx.getText()),
-                            Double.parseDouble(vecy.getText()),
-                            Double.parseDouble(vecz.getText()));
-                    AbstractMaterial material = getMaterial(colR.getText(), colG.getText(), colB.getText(),
-                            materialsCombo.getValue(), dif.getText(), ref.getText());
-                    readObjFile(hittables, addSceneField.getText(), material, push);
-                } catch (Exception e){
-                    info.setText(e.getMessage());
-                }
+        addObj.setOnAction(event -> {
+            try{
+                Vec3d push = new Vec3d(Double.parseDouble(vecx.getText()),
+                        Double.parseDouble(vecy.getText()),
+                        Double.parseDouble(vecz.getText()));
+                AbstractMaterial material = getMaterial(colR.getText(), colG.getText(), colB.getText(),
+                        materialsCombo.getValue(), dif.getText(), ref.getText());
+                readObjFile(hittables, addSceneField.getText(), material, push);
+            } catch (Exception e){
+                info.setText(e.getMessage());
             }
         });
 
 
 
 
-        startVisualization.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try {
-                    if ( Integer.parseInt(guiWidthParam.getText()) < 1 ||
-                            Integer.parseInt(guiHeightParam.getText()) < 1 ||
-                            Integer.parseInt(widthParam.getText()) <1 ||
-                            Integer.parseInt(heightParam.getText()) < 1||
-                            Integer.parseInt(densityParam.getText())< 1||
-                            Integer.parseInt(depthParam.getText()) < 1){
-                            throw new RuntimeException("nonpositive");
-                    }
-                    Engine eng = new Engine(Integer.parseInt(guiWidthParam.getText()),
-                            Integer.parseInt(guiHeightParam.getText()),
-                            Integer.parseInt(widthParam.getText()),
-                            Integer.parseInt(heightParam.getText()),
-                            Integer.parseInt(densityParam.getText()),
-                            Integer.parseInt(depthParam.getText()), hittables, sky, app);
-                    Thread th = new Thread(eng);
-                    th.start();
-                    setThread(th);
-                } catch (Exception e){
-                    info.setText("Wrong value(s) of width/height/depth/density");
+        startVisualization.setOnAction(event -> {
+            try {
+                if ( Integer.parseInt(guiWidthParam.getText()) < 1 ||
+                        Integer.parseInt(guiHeightParam.getText()) < 1 ||
+                        Integer.parseInt(widthParam.getText()) <1 ||
+                        Integer.parseInt(heightParam.getText()) < 1||
+                        Integer.parseInt(densityParam.getText())< 1||
+                        Integer.parseInt(depthParam.getText()) < 1){
+                        throw new RuntimeException("nonpositive");
                 }
-
-
+                Engine eng = new Engine(Integer.parseInt(guiWidthParam.getText()),
+                        Integer.parseInt(guiHeightParam.getText()),
+                        Integer.parseInt(widthParam.getText()),
+                        Integer.parseInt(heightParam.getText()),
+                        Integer.parseInt(densityParam.getText()),
+                        Integer.parseInt(depthParam.getText()), hittables, sky, app,
+                        new Vec3d(Double.parseDouble(camStartx.getText()),
+                        Double.parseDouble(camStarty.getText()),
+                        Double.parseDouble(camStartz.getText())),
+                        new Vec3d(Double.parseDouble(camEndx.getText()),
+                                Double.parseDouble(camEndy.getText()),
+                                Double.parseDouble(camEndz.getText())));
+                Thread th = new Thread(eng);
+                th.start();
+                setThread(th);
+            } catch (Exception e){
+                info.setText("Wrong value(s) of width/height/depth/density");
             }
+
+
         });
 
     }
@@ -277,12 +282,6 @@ public class App extends Application {
     private void setThread(Thread th){
         rendering = th;
     }
-
-    void interruptThread(){
-        rendering.interrupt();
-    }
-
-
 
 
     private AbstractMaterial getMaterial(String R, String G, String B, MaterialType mt, String diff, String  refr){
@@ -340,7 +339,7 @@ public class App extends Application {
 
                 String toParse = scan.nextLine();
                 String[] parts = toParse.split(" ");
-                List<String> list = new ArrayList<String>(Arrays.asList(parts));
+                List<String> list = new ArrayList<>(Arrays.asList(parts));
                 list.removeAll(Arrays.asList("", null));
                 System.out.println(list);
                 if (list.size() < 1){
@@ -369,7 +368,7 @@ public class App extends Application {
             while (scan.hasNextLine()){
                 String toParse = scan.nextLine();
                 String[] parts = toParse.split(",");
-                int idx = 0;
+                int idx;
                 AbstractMaterial material;
                 idx = switch (parts[0]) {
                     case "sphere" -> 5;

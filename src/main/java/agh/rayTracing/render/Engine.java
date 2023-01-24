@@ -37,20 +37,21 @@ public class Engine implements Runnable{
     ISky sky;
 
     public Engine(int guiWidth, int guiHeight, int outWidth,
-                  int outHeight, int density, int depth, HittableList hittables, ISky sky, App init){
+                  int outHeight, int density, int depth, HittableList hittables, ISky sky, App init,
+                  Vec3d camStart, Vec3d camEnd){
 
         this.vis = new Visualizer(guiWidth, guiHeight, outWidth, outHeight, init);
         this.guiWidth = guiWidth;
         this.guiHeight = guiHeight;
         this.outHeight = outHeight;
         this.outWidth = outWidth;
-        cam = new Camera(outWidth, outHeight, new Vec3d(-5,5,5), // new Vec3d(-2,2,1),
-                new Vec3d(0, 1, -1), new Vec3d(0,1,0), 150);
+//        cam = new Camera(outWidth, outHeight, new Vec3d(-2,2,1), //
+//                new Vec3d(0, 1, -1), new Vec3d(0,1,0), 90);
+        cam = new Camera(outWidth, outHeight, camStart, camEnd, new Vec3d(0,1,0), 90);
         samples = density;
         this.depth = depth;
         this.hittables = hittables;
         this.sky = sky;
-
     }
 
 

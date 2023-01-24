@@ -2,6 +2,8 @@ package agh.rayTracing.math;
 
 import agh.rayTracing.Main;
 
+import java.util.Objects;
+
 import static java.lang.Math.*;
 
 public class Vec3d {
@@ -13,6 +15,19 @@ public class Vec3d {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vec3d vec3d = (Vec3d) o;
+        return Double.compare(vec3d.x, x) == 0 && Double.compare(vec3d.y, y) == 0 && Double.compare(vec3d.z, z) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, z);
     }
 
     public Vec3d opposite(){
