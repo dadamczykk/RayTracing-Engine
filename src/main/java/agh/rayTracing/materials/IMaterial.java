@@ -5,5 +5,5 @@ import agh.rayTracing.hittable.HitRecord;
 import agh.rayTracing.math.Vec3d;
 
 public interface IMaterial {
-    public boolean scatter(Ray r, HitRecord hr, Vec3d reduced, Ray scatter);
+    boolean scatter(Ray r, HitRecord hr, Vec3d reduced, Ray scatter);
 }

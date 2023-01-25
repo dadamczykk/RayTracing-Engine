@@ -39,67 +39,68 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage){
-        Label widthLabel = new Label("Output image width: ");
+        Label widthLabel = new Label("Output image width:     ");
         TextField widthParam = new TextField("400");
         HBox widthBox = new HBox(widthLabel,widthParam);
 
-        Label heightLabel = new Label("Output image height");
+        Label heightLabel = new Label("Output image height:     ");
         TextField heightParam = new TextField("225");
         HBox heightBox = new HBox(heightLabel, heightParam);
 
-        Label guiWidthLabel = new Label("gui width: ");
+        Label guiWidthLabel = new Label("Render screen width:     ");
         TextField guiWidthParam = new TextField("1280");
         HBox guiWidthBox = new HBox(guiWidthLabel,guiWidthParam);
 
-        Label guiHeightLabel = new Label("gui height: ");
+        Label guiHeightLabel = new Label("Render screen height:     ");
         TextField guiHeightParam = new TextField("720");
         HBox guiHeightBox = new HBox(guiHeightLabel, guiHeightParam);
 
-        Label depthLabel = new Label("depth or recurrence");
+        Label depthLabel = new Label("Depth or recurrence:     ");
         TextField depthParam = new TextField("10");
         HBox depthBox = new HBox(depthLabel, depthParam);
 
-        Label densityLabel = new Label("density of rays per pixel");
+        Label densityLabel = new Label("Density of rays per pixel:     ");
         TextField densityParam = new TextField("10");
         HBox densityBox = new HBox(densityLabel, densityParam);
 
         Button addScene = new Button("Save scene to file");
         Button readScene = new Button("Read scene from file");
-        TextField addSceneField = new TextField("path to file");
+        TextField addSceneField = new TextField("Path to file");
 
         HBox addSceneBox = new HBox(addScene, readScene, addSceneField);
 
-        Label cameraStart = new Label("below write x, y, z coordinates of point where camera stands");
-        TextField camStartx = new TextField("-2");
+        Label cameraStart = new Label("Below write x, y, z coordinates of point where camera stands");
+        TextField camStartx = new TextField("-4");
         TextField camStarty = new TextField("2");
-        TextField camStartz = new TextField("1");
+        TextField camStartz = new TextField("-2");
         HBox camStartBox = new HBox(camStartx, camStarty, camStartz);
 
-        Label cameraEnd = new Label("below write x, y, z coordinates of point where camera is focused");
+        Label cameraEnd = new Label("Below write x, y, z coordinates of point where camera is focused");
         TextField camEndx = new TextField("0");
         TextField camEndy = new TextField("1");
         TextField camEndz = new TextField("-1");
         HBox camEndBox = new HBox(camEndx, camEndy, camEndz);
 
-        Label point = new Label("below write x y z of sphere centre or plane point");
-        TextField pointx = new TextField("X value");
-        TextField pointy = new TextField("Y value");
-        TextField pointz = new TextField("Z value");
+        Label point = new Label("Below write x, y, z coordinates of sphere centre, or point contained in plane");
+        TextField pointx = new TextField("x value");
+        TextField pointy = new TextField("y value");
+        TextField pointz = new TextField("z value");
         HBox pointBox = new HBox(pointx, pointy, pointz);
 
         Label cirrad = new Label("Below write radius of sphere");
-        TextField cirradfi = new TextField("Here write radious of sphere");
+        TextField cirradfi = new TextField("Radious");
 
-        Label vec = new Label("belowe write x y z normal vector of plane, or vector of object push");
-        TextField vecx = new TextField("X value");
-        TextField vecy = new TextField("Y value");
-        TextField vecz = new TextField("Z value");
+        Label vec = new Label("Below write x, y, z coordinates of normal vector of plane," +
+                "or vector of object shift");
+        TextField vecx = new TextField("x value");
+        TextField vecy = new TextField("y value");
+        TextField vecz = new TextField("z value");
         HBox vecBox = new HBox(vecx, vecy, vecz);
 
-        Label col = new Label("Below write color of material/background in RGB");
+        Label col = new Label("Below write color of objects material, or background in RGB values");
         TextField colR = new TextField("Red value");
-        TextField colG = new TextField("Blue value");
-        TextField colB = new TextField("Red value");
+        TextField colG = new TextField("Green value");
+        TextField colB = new TextField("Blue value");
         HBox colBox = new HBox(colR, colG, colB);
 
         Button addObj = new Button("Add obj from file");
@@ -109,7 +110,7 @@ public class App extends Application {
         Button setBGImg = new Button("Set background image");
         HBox addHittableBox = new HBox(addPlane, addSphere, addObj, setBGcol, setBGImg);
 
-        Label difref = new Label("Below write diffusion / refraction parameter");
+        Label difref = new Label("Below write diffusion (for metal material), or refraction (for glass) value");
         TextField dif = new TextField("Diffusion, values between [0,1]");
         TextField ref = new TextField("Refraction, for example 1.5");
         HBox difrefbox = new HBox(dif, ref);
@@ -119,7 +120,7 @@ public class App extends Application {
         ComboBox<MaterialType> materialsCombo = new ComboBox<>(materials);
 
 
-        Button startVisualization = new Button("StartVisualization");
+        Button startVisualization = new Button("Start rendering");
 
         Label info = new Label("");
 
@@ -153,6 +154,7 @@ public class App extends Application {
                         Double.parseDouble(vecz.getText()));
 
                 hittables.add(new Plane(pos, normal, material));
+                info.setText("Plane has been added.");
             } catch (Exception e){
                 info.setText(e.getMessage());
             }
@@ -168,6 +170,7 @@ public class App extends Application {
                 Vec3d pos = new Vec3d(Double.parseDouble(pointx.getText()), Double.parseDouble(pointy.getText()),
                         Double.parseDouble(pointz.getText()));
                 hittables.add(new Sphere(pos, Double.parseDouble(cirradfi.getText()), material));
+                info.setText("Sphere has been added.");
             } catch (Exception ee) {
                 info.setText(ee.getMessage());
             }
@@ -184,6 +187,7 @@ public class App extends Application {
                 }
                 col1.divideSelf(255.999);
                 setISkyCol(col1);
+                info.setText("Background color has been set.");
 
             } catch (Exception e) {
 
@@ -196,6 +200,7 @@ public class App extends Application {
                 File file = new File(addSceneField.getText());
                 BufferedImage img = ImageIO.read(file);
                 setISkyImg(img);
+                info.setText("Background image has been set.");
             } catch (IOException e) {
                 info.setText(e.getMessage());
             }
@@ -206,6 +211,7 @@ public class App extends Application {
                 String filename = addSceneField.getText();
 
                 saveSceneToFile(hittables, filename);
+                info.setText("Scene successfully saved to file.");
             }catch (Exception e){
                 info.setText(e.getMessage());
             }
@@ -216,6 +222,7 @@ public class App extends Application {
         readScene.setOnAction(event -> {
             try{
                 readSceneFromFile(hittables, addSceneField.getText());
+                info.setText("Scene successfully read from file");
             } catch (Exception e){
                 info.setText(e.getMessage());
             }
@@ -229,6 +236,7 @@ public class App extends Application {
                 AbstractMaterial material = getMaterial(colR.getText(), colG.getText(), colB.getText(),
                         materialsCombo.getValue(), dif.getText(), ref.getText());
                 readObjFile(hittables, addSceneField.getText(), material, push);
+                info.setText("Object has been added");
             } catch (Exception e){
                 info.setText(e.getMessage());
             }
@@ -262,8 +270,9 @@ public class App extends Application {
                 Thread th = new Thread(eng);
                 th.start();
                 setThread(th);
+                info.setText("Rendering has started.");
             } catch (Exception e){
-                info.setText("Wrong value(s) of width/height/depth/density");
+                info.setText("Wrong value(s) of width/height/depth/density/camera position.");
             }
 
 
@@ -341,7 +350,6 @@ public class App extends Application {
                 String[] parts = toParse.split(" ");
                 List<String> list = new ArrayList<>(Arrays.asList(parts));
                 list.removeAll(Arrays.asList("", null));
-                System.out.println(list);
                 if (list.size() < 1){
                     continue;
                 }
@@ -350,7 +358,6 @@ public class App extends Application {
                             Double.parseDouble(list.get(2)),
                             Double.parseDouble(list.get(3))).add(push));
                 } else if (parts[0].equals("f")){
-                    System.out.println("added");
                     hittables.add(new Triangle(vertices.get(Integer.parseInt(list.get(1))),
                             vertices.get(Integer.parseInt(list.get(2))),
                             vertices.get(Integer.parseInt(list.get(3))), material));

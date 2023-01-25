@@ -4,16 +4,13 @@ import agh.rayTracing.Main;
 import agh.rayTracing.gui.App;
 import agh.rayTracing.gui.Visualizer;
 import agh.rayTracing.hittable.*;
-import agh.rayTracing.materials.*;
 import agh.rayTracing.math.Vec3d;
 import javafx.application.Platform;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import static java.lang.Math.sqrt;
 
 public class Engine implements Runnable{
@@ -32,8 +29,6 @@ public class Engine implements Runnable{
 
     HittableList hittables;
 
-    Vec3d bgColor;
-
     ISky sky;
 
     public Engine(int guiWidth, int guiHeight, int outWidth,
@@ -45,8 +40,6 @@ public class Engine implements Runnable{
         this.guiHeight = guiHeight;
         this.outHeight = outHeight;
         this.outWidth = outWidth;
-//        cam = new Camera(outWidth, outHeight, new Vec3d(-2,2,1), //
-//                new Vec3d(0, 1, -1), new Vec3d(0,1,0), 90);
         cam = new Camera(outWidth, outHeight, camStart, camEnd, new Vec3d(0,1,0), 90);
         samples = density;
         this.depth = depth;
@@ -78,15 +71,15 @@ public class Engine implements Runnable{
         }
 
 
-    private double clamp(double val, double min, double max){
-        if (val < min) return min;
+    private double clamp(double val, double max){
+        if (val < (double) 0) return 0;
         return Math.min(val, max);
     }
 
     private Vec3d getColor(Vec3d color, int samples){
-        return new Vec3d(clamp(sqrt(color.x / samples), 0, 0.999),
-                clamp(sqrt(color.y / samples), 0, 0.9999),
-                clamp(sqrt(color.z / samples), 0, 0.9999));
+        return new Vec3d(clamp(sqrt(color.x / samples), 0.999),
+                clamp(sqrt(color.y / samples), 0.9999),
+                clamp(sqrt(color.z / samples), 0.9999));
     }
 
     public synchronized void run(){
@@ -115,20 +108,17 @@ public class Engine implements Runnable{
 
                 col = this.getColor(col, samples);
 
-                str.append(col.getColor());;
+                str.append(col.getColor());
 
                 Vec3d finalCol = col;
-                Platform.runLater(() -> {
-                    vis.writePixel(finalX, finalY, finalCol);
-                });
+                Platform.runLater(() -> vis.writePixel(finalX, finalY, finalCol));
 
             }
 
         }
-        System.out.println("here");
         String filename = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss'.ppm'").format(new Date());
         File out = new File(filename);
-        FileWriter writer = null;
+        FileWriter writer;
         try {
             writer = new FileWriter(out);
             writer.write(str.toString());

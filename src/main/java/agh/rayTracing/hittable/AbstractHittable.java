@@ -5,11 +5,6 @@ import agh.rayTracing.materials.AbstractMaterial;
 
 public abstract class AbstractHittable implements IHittable {
 
-    // lightsource on of
-
-
-    // light rozpraszanie
-
     public AbstractMaterial material;
 
     @Override

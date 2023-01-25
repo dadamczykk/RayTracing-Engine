@@ -25,7 +25,6 @@ public class Triangle extends AbstractHittable{
         Vec3d v1 = b.subtract(a);
         Vec3d v2 = c.subtract(a);
         Vec3d N = v1.cross(v2);
-        double area = N.length();
 
         double NdotRay = N.dot(r.direction);
         if (abs(NdotRay) < 0.000001){
@@ -65,7 +64,6 @@ public class Triangle extends AbstractHittable{
         HR.p = r.at(t);
         HR.material = material;
         HR.setFaceNormal(r, N);
-//        HR.front = true;
         return true;
 
     }

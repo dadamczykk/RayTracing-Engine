@@ -5,12 +5,9 @@ import java.util.Random;
 
 import static java.lang.Math.sqrt;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class Vec3dTest { //testy sprawdzam na int, chociaż wektory obsługują double. Robię tak ze względu na
-    // możliwy brak precyzji typów zmiennoprzecinkowych
-
+public class Vec3dTest {
     @Test
     public void oppositeTest(){
             Random rand = new Random();

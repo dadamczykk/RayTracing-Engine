@@ -9,8 +9,6 @@ public abstract class AbstractMaterial implements  IMaterial{
     public Vec3d col = new Vec3d(0,0,0);
     public double scatter;
 
-    double scatterProbability = 1;
-
     public abstract boolean scatter(Ray r, HitRecord hr, Vec3d reduced, Ray scatter);
 
     public Vec3d emitted(){

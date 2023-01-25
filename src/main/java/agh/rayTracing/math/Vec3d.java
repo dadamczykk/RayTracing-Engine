@@ -119,14 +119,11 @@ public class Vec3d {
 
     @Override
     public String toString() {
-        return  Double.toString(x) + ", " +
-                Double.toString(y) + ", " +
-                Double.toString(z) + " " ;
+        return x + ", " +
+                y + ", " +
+                z + " " ;
     }
 
-    public static Vec3d random(){
-        return new Vec3d(Main.randomDouble(), Main.randomDouble(), Main.randomDouble());
-    }
 
     public static Vec3d random(double min, double max){
         return new Vec3d(Main.randomDouble(min, max), Main.randomDouble(min, max), Main.randomDouble(min, max));
@@ -139,19 +136,6 @@ public class Vec3d {
         }
     }
 
-//    public static Vec3d randomUnitVec(){
-//        return randomInUnitSphere().unitVec();
-//    }
-//
-//    public static Vec3d randomInHemi(Vec3d n){
-//        Vec3d inUni = randomInUnitSphere();
-//        return (inUni.dot(n) > 0) ? inUni : inUni.opposite();
-//    }
-//
-//    public boolean nearZero(){
-//        double s = 1e-9;
-//        return abs(this.x) < s && abs(this.y) < s && abs(this.z) < s;
-//    }
 
     public static Vec3d reflect(Vec3d v, Vec3d n){
         return v.subtract(n.multiply(2*n.dot(v)));

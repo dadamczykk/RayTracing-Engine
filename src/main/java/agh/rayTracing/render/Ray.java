@@ -1,7 +1,5 @@
 package agh.rayTracing.render;
 
-import agh.rayTracing.materials.IMaterial;
-import agh.rayTracing.materials.Metal;
 import agh.rayTracing.math.Vec3d;
 
 

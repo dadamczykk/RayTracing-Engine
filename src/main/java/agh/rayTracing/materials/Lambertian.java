@@ -11,22 +11,4 @@ public class Lambertian extends Metal{
     }
 
 
-//    @Override
-//    public boolean scatter(Ray r, HitRecord hr, Vec3d reduced, Ray scatter) {
-//
-//        Vec3d scatterDir = hr.normal.add(Vec3d.randomUnitVec());
-//
-//        if (scatterDir.nearZero()){
-//            scatterDir = hr.normal;
-//        }
-//
-//        scatter.origin = hr.p;
-//        scatter.direction = scatterDir;
-//
-//        reduced.x = col.x;
-//        reduced.y = col.y;
-//        reduced.z = col.z;
-//        return true;
-//    }
-
 }

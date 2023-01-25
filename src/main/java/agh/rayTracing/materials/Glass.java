@@ -54,7 +54,6 @@ public class Glass extends  AbstractMaterial{
 
     @Override
     public Vec3d emitted(){
-//        System.out.println("ehre");
         return new Vec3d(0,0,0);
     }
 }

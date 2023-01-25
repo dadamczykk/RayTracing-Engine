@@ -18,7 +18,6 @@ public class Light extends AbstractMaterial{
 
     @Override
     public Vec3d emitted(){
-//        System.out.println("ehre");
         return new Vec3d(1,1,1);
     }
 

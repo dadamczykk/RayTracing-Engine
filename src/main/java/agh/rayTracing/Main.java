@@ -2,12 +2,6 @@ package agh.rayTracing;
 
 import agh.rayTracing.gui.App;
 import javafx.application.Application;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Random;
 
 public class Main {
@@ -28,7 +22,7 @@ public class Main {
         return deg * pi / 180;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         Application.launch(App.class);
 
     }

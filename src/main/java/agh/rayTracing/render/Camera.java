@@ -2,7 +2,6 @@ package agh.rayTracing.render;
 
 import agh.rayTracing.Main;
 import agh.rayTracing.math.Vec3d;
-
 import static java.lang.Math.tan;
 
 public class Camera {

@@ -2,12 +2,7 @@ package agh.rayTracing.render;
 
 import agh.rayTracing.Main;
 import agh.rayTracing.math.Vec3d;
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
 import static java.lang.Math.acos;
 import static java.lang.Math.atan2;
 
@@ -17,7 +12,7 @@ public class ImageSky implements ISky{
 
     BufferedImage img;
 
-    public ImageSky(BufferedImage b) throws IOException {
+    public ImageSky(BufferedImage b) {
         this.imgHeight = b.getHeight() - 1;
         this.imgWidth = b.getWidth() - 1;
         this.img = b;

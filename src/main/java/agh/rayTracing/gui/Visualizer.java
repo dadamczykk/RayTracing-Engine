@@ -42,7 +42,6 @@ public class Visualizer {
 
 
         pixels = new Rectangle[rowsNo][colsNo];
-//        Label precentage = new Label("0%");
 
         img = new WritableImage(colsNo, rowsNo);
         iv = new ImageView(img);
@@ -57,7 +56,6 @@ public class Visualizer {
 
 
 
-        System.out.println("here");
         stage = new Stage();
         stage.setScene(scene);
         stage.show();
@@ -66,23 +64,9 @@ public class Visualizer {
         });
     }
 
-    public void updatePrecentage(int value){
-        precentage.setText(Integer.toString(value));
-    }
     public void writePixel(int x, int y, Vec3d col) {
         y = this.rowsNo - y - 1;
         img.getPixelWriter().setColor(x, y, Color.color(col.x, col.y, col.z));
     }
-//        precentage.setText(Integer.toString((y * colsNo + x) * 100 / (rowsNo * colsNo)) + "%");
-//        stage.getScene().getWindow().setWidth(stage.getScene().getWidth() + 0.001);
 
-//        root.getChildren().addAll(iv);
-//        System.out.println("here");
-
-//        pixels[y][x].setFill(Color.color(col.x, col.y, col.z));
     }
-//    public void paintImg(int y){
-//        iv.setImage(img);
-//        stage.setHeight(height * (1 - ((double) y / rowsNo)) + 50);
-//    }
-//}

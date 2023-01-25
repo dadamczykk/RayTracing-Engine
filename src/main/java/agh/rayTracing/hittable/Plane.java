@@ -30,7 +30,6 @@ public class Plane extends AbstractHittable{
         HR.p = r.at(t);
         HR.material = material;
         HR.front = true;
-//        HR.setFaceNormal(r, normal);
         return true;
     }
 }

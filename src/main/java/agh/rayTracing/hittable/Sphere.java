@@ -11,8 +11,6 @@ public class Sphere extends AbstractHittable{
     public double radious;
 
 
-
-
     public Sphere(Vec3d center, double radius, AbstractMaterial material){
         this.center = center;
         this.radious = radius;
@@ -40,12 +38,10 @@ public class Sphere extends AbstractHittable{
         }
         HR.t = root;
         HR.p = r.at(HR.t);
-        Vec3d outward = (HR.p.subtract(center)).divide(radious);;
+        Vec3d outward = (HR.p.subtract(center)).divide(radious);
         HR.setFaceNormal(r, outward);
-//        System.out.println("material");
 
         HR.material = this.material;
-//        System.out.println(this.material);
 
         return true;
     }
